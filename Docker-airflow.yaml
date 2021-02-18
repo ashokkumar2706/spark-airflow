@@ -1,0 +1,22 @@
+FROM centos:8
+
+RUN yum update
+RUN yum -y install gcc
+RUN yum -y install platform-python-devel.x86_64
+RUN yum -y install python3-pip
+RUN export AIRFLOW_HOME=~/airflow
+RUN pip3 install apache-airflow
+RUN pip3 install apache-airflow[ssh]
+RUN airflow initdb
+RUN yum -y install tree vim
+RUN yum install -y epel-release
+RUN yum -y update
+RUN yum install -y supervisor
+RUN airflow initdb
+
+COPY supervisord.conf /etc/supervisord.conf
+COPY airflow_wrapper_script.sh airflow_wrapper_script.sh
+RUN chmod 777 airflow_wrapper_script.sh
+
+EXPOSE 8080
+CMD ["./airflow_wrapper_script.sh"]
